@@ -3,7 +3,9 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
-const TicketForm = () => {
+const TicketForm = ({ ticket }) => {
+  const EDITMODE = ticket._id === 'new' ? false : true;
+
   const router = useRouter();
   const handleChange = (e) => {
     const value = e.target.value;
@@ -38,6 +40,10 @@ const TicketForm = () => {
     status: 'Not Started',
     category: 'Hardware Problem',
   };
+
+  if (EDITMODE) {
+    startingTicketData['title'] = ticket.title;
+  }
 
   const [formData, setFormData] = useState(startingTicketData);
 
