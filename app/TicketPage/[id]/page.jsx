@@ -22,6 +22,7 @@ const TicketPage = async ({ params }) => {
       _id: 'new',
     };
   }
+
   return <TicketForm ticket={updateTicketData} />;
 };
 

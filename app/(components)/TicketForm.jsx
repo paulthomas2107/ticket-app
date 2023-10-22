@@ -43,6 +43,11 @@ const TicketForm = ({ ticket }) => {
 
   if (EDITMODE) {
     startingTicketData['title'] = ticket.title;
+    startingTicketData['description'] = ticket.description;
+    startingTicketData['priority'] = ticket.priority;
+    startingTicketData['progress'] = ticket.progress;
+    startingTicketData['status'] = ticket.status;
+    startingTicketData['category'] = ticket.category;
   }
 
   const [formData, setFormData] = useState(startingTicketData);
@@ -54,7 +59,7 @@ const TicketForm = ({ ticket }) => {
         method="POST"
         onSubmit={handleSubmit}
       >
-        <h3>Create Your Ticket</h3>
+        <h3>{EDITMODE ? 'Update Your Ticket' : 'Create Your Ticket'}</h3>
         <label>Title</label>
         <input
           id="title"
@@ -152,7 +157,11 @@ const TicketForm = ({ ticket }) => {
           <option value="Started">Started</option>
           <option value="Done">Done</option>
         </select>
-        <input type="submit" className="btn " value="Create Ticket" />
+        <input
+          type="submit"
+          className="btn "
+          value={EDITMODE ? 'Update Ticket' : 'Create Ticket'}
+        />
       </form>
     </div>
   );
