@@ -14,7 +14,7 @@ const TicketForm = () => {
     }));
   };
 
-  const handleSubmit = async  (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await fetch('/api/Tickets', {
       method: 'POST',
@@ -33,7 +33,7 @@ const TicketForm = () => {
   const startingTicketData = {
     title: '',
     description: '',
-    prioriy: 1,
+    priority: 1,
     progress: 0,
     status: 'Not Started',
     category: 'Hardware Problem',
