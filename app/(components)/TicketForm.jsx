@@ -1,43 +1,16 @@
 'use client';
-
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 const TicketForm = ({ ticket }) => {
   const EDITMODE = ticket._id === 'new' ? false : true;
-
   const router = useRouter();
-  const handleChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.name;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch('/api/Tickets', {
-      method: 'POST',
-      body: JSON.stringify({ formData }),
-      'content-type': 'application/json',
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to create ticket');
-    }
-
-    router.refresh();
-    router.push('/');
-  };
-
   const startingTicketData = {
     title: '',
     description: '',
     priority: 1,
     progress: 0,
-    status: 'Not Started',
+    status: 'not started',
     category: 'Hardware Problem',
   };
 
@@ -52,14 +25,61 @@ const TicketForm = ({ ticket }) => {
 
   const [formData, setFormData] = useState(startingTicketData);
 
+  const handleChange = (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+
+    setFormData((preState) => ({
+      ...preState,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (EDITMODE) {
+      const res = await fetch(`/api/Tickets/${ticket._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({ formData }),
+      });
+      if (!res.ok) {
+        throw new Error('Failed to update ticket');
+      }
+    } else {
+      const res = await fetch('/api/Tickets', {
+        method: 'POST',
+        body: JSON.stringify({ formData }),
+        //@ts-ignore
+        'Content-Type': 'application/json',
+      });
+      if (!res.ok) {
+        throw new Error('Failed to create ticket');
+      }
+    }
+
+    router.refresh();
+    router.push('/');
+  };
+
+  const categories = [
+    'Hardware Problem',
+    'Software Problem',
+    'Application Deveopment',
+    'Project',
+  ];
+
   return (
-    <div className="flex justify-center">
+    <div className=" flex justify-center">
       <form
-        className="flex flex-col gap-3 w-1/2"
-        method="POST"
         onSubmit={handleSubmit}
+        method="post"
+        className="flex flex-col gap-3 w-1/2"
       >
-        <h3>{EDITMODE ? 'Update Your Ticket' : 'Create Your Ticket'}</h3>
+        <h3>{EDITMODE ? 'Update Your Ticket' : 'Create New Ticket'}</h3>
         <label>Title</label>
         <input
           id="title"
@@ -84,10 +104,13 @@ const TicketForm = ({ ticket }) => {
           value={formData.category}
           onChange={handleChange}
         >
-          <option value="Hardware Problem">Hardware Problem</option>
-          <option value="Software Problem">Software Problem</option>
-          <option value="Project">Project</option>
+          {categories?.map((category, _index) => (
+            <option key={_index} value={category}>
+              {category}
+            </option>
+          ))}
         </select>
+
         <label>Priority</label>
         <div>
           <input
@@ -147,19 +170,14 @@ const TicketForm = ({ ticket }) => {
           onChange={handleChange}
         />
         <label>Status</label>
-        <select
-          name="status"
-          id="status"
-          value={formData.status}
-          onChange={handleChange}
-        >
-          <option value="Not Started">Not Started</option>
-          <option value="Started">Started</option>
-          <option value="Done">Done</option>
+        <select name="status" value={formData.status} onChange={handleChange}>
+          <option value="not started">Not Started</option>
+          <option value="started">Started</option>
+          <option value="done">Done</option>
         </select>
         <input
           type="submit"
-          className="btn "
+          className="btn max-w-xs"
           value={EDITMODE ? 'Update Ticket' : 'Create Ticket'}
         />
       </form>
